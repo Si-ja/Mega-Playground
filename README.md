@@ -1,9 +1,10 @@
 # MegaPlayground
 
 The concept of this repository is to try and show a system that has multiple components to it.
-This one utilizes presence of an existing Database, several back-end services that communicate with each other and the Database. As well as the front-end service that is only used by the user. Together with it, everything is running on Docker containers, where in parallel there are also monitoring systems used for tracking the activity of certain operations.
+This one utilizes presence of an existing Database, several back-end services that communicate with each other and a front-end service.  Together with it, everything is running on Docker containers, where in parallel there are also monitoring systems used for tracking the activity of certain operations.
 The idea is that you could expand and add to the system new components and see how they could interact.
 Everything operates on microservices level, meaning it should be possible to swap and change components at will.
+All of the components used in this case are meant only for educational purposes to allow for improving of own skills working with programming and modern technologies. This applies to usage of docker container versions, conceptual examples and the setup.
 
 Feel free to add more services, change existing ones or expand the system further with concepts like deploying everything with K8S or making builds with something like Jenkins where first the unit tests are ran for checking the state of the system.
 
