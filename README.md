@@ -26,9 +26,9 @@ What is the essence of the existing services? It's just an idea of a stock marke
 **NOTE:**
 For each subsequent re-run if you will be changing something or adding, you can also run `prepare-infrastructure-stocks.ps1` with additional flags. 
 
-    -keepDotNet: Allows you to keep your current containers for .NET application as they are. This is convenient for when you are recreating the infrastructure without touching the .NET side prior, meaning there is no reason for re-building it from scratch.
+* -keepDotNet: Allows you to keep your current containers for .NET application as they are. This is convenient for when you are recreating the infrastructure without touching the .NET side prior, meaning there is no reason for re-building it from scratch.
 
-    -keepJS: Allows you to keep your current containers for JavaScript based front-end application as they are. This is convenient for when you are recreating the infrastructure without touching the front-endT side prior, meaning there is no reason for re-building it from scratch.
+* -keepJS: Allows you to keep your current containers for JavaScript based front-end application as they are. This is convenient for when you are recreating the infrastructure without touching the front-endT side prior, meaning there is no reason for re-building it from scratch.
 
 All operations for keeping, recreating, deleting & stopping the infrastructure are done through the several existing scripts in the \builds\Scripts path. If you want to change the performance of your application, first of all, please refer to them.
 
