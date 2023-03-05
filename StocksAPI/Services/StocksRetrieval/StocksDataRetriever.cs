@@ -156,7 +156,7 @@ public class StocksDataRetriever : IStocksDataRetriever
         }
         catch (Exception e)
         {
-            throw new NullReferenceException("An issue ocurred providing stock data. Error: {Error}", e);
+            throw new NullReferenceException($"An issue ocurred providing stock data. Error: {e}");
         }
     }
 

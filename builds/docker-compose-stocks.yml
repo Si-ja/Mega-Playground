@@ -37,6 +37,7 @@ services:
         ASPNETCORE_ENVIRONMENT: Docker
     depends_on:
       - database
+      - cachedb
     restart: always
     networks:
       - stocks
@@ -128,8 +129,6 @@ services:
       - "5433:6379"
     volumes:
       - ./Database/Redis/local-data:/data 
-    depends_on:
-      - stocksapi
     networks:
       - stocks
 
