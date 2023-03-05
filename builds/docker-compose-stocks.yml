@@ -118,6 +118,21 @@ services:
     networks:
       - stocks
 
+  cachedb:
+    container_name: RedisDB
+    image: redis:7.0.9-bullseye
+    restart: always
+    environment:
+      REDIS_PASSWORD: admin
+    ports:
+      - "5433:6379"
+    volumes:
+      - ./Database/Redis/local-data:/data 
+    depends_on:
+      - stocksapi
+    networks:
+      - stocks
+
 networks:
     stocks:
         driver: bridge

@@ -6,6 +6,7 @@ using DataAccess.Services.Connections;
 using DataAccess.Services;
 using MonitoringTools.Prometheus;
 using StocksAPI.Services.StocksRetrieval;
+using DataAccess.Services.Redis;
 
 namespace StocksAPI;
 
@@ -32,6 +33,9 @@ public class Program
 
         // Add Prometheus as a service to operate with
         builder.Services.AddPrometheusServer(builder.Configuration);
+
+        // Add communication with Redis
+        builder.Services.AddRedisService(builder.Configuration);
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

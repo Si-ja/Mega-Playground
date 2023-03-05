@@ -106,3 +106,7 @@ Please see the default username and password used to connect in the `docker-comp
 
 ![Alt text](Visualization/Grafana.PNG)
 (Example of a use case)
+
+### Redis
+
+Redis is running as a caching layer for the StocksAPI service. You can tweak few variables in settings for it (and potentially on the .NET side, depending on the amount of changes done) to change the performance of it to your desired solution.

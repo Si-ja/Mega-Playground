@@ -2,5 +2,6 @@
 
 public enum DbConnectionList
 {
-    Postgres
+    Postgres,
+    Redis
 }

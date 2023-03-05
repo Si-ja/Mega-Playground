@@ -2,6 +2,9 @@
 using DataAccess.DataHandler;
 using DataAccess.Models;
 using DataAccess.Services.Connections;
+using DataAccess.Services.Redis;
+using DataAccess.Services.Redis.Extensions;
+using Microsoft.Extensions.Caching.Distributed;
 using MonitoringTools.Prometheus;
 
 namespace StocksAPI.Services.StocksRetrieval;
@@ -11,15 +14,24 @@ public class StocksDataRetriever : IStocksDataRetriever
     private readonly ILogger<StocksDataRetriever> logger;
     private readonly IStocksDataHandler stocksDataHandler;
     private readonly IMonitoringMetrics monitoringMetrics;
+    private readonly IDistributedCache cache;
+    private readonly RedisSettings redisSettings;
 
     public StocksDataRetriever(
+        IConfiguration configuration,
         IStocksDataHandler stocksDataHandler,
         IMonitoringMetrics monitoringMetrics,
-        ILogger<StocksDataRetriever> logger)
+        ILogger<StocksDataRetriever> logger,
+        IDistributedCache cache)
     {
         this.stocksDataHandler = stocksDataHandler;
         this.monitoringMetrics = monitoringMetrics;
         this.logger = logger;
+        this.cache = cache;
+
+        this.redisSettings = configuration
+            .GetSection(nameof(RedisSettings))
+            .Get<RedisSettings>();
     }
 
     public async Task<StockModel> GetXYZStockAsync()
@@ -39,8 +51,6 @@ public class StocksDataRetriever : IStocksDataRetriever
 
     private async Task<StockModel> GetStockDataAsync(string stockName)
     {
-        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Postgres)}_{nameof(stocksDataHandler.GetStockPrice)}");
-
         try
         {
             StockDataModel stockDbData;
@@ -48,52 +58,97 @@ public class StocksDataRetriever : IStocksDataRetriever
             switch (stockName)
             {
                 case "XYZStock":
-                    stockDbData = await stocksDataHandler.GetStockPrice(nameof(XYZStock), DbConnectionList.Postgres);
-                    if (stockDbData != null || stockDbData != default)
+                    XYZStock xYZStock = new();
+                    string recordKey_XYZStock = $"StocksApi_{nameof(XYZStock)}_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
+                    xYZStock = await this.cache.GetRecordAsync<XYZStock>(recordKey_XYZStock);
+                    
+                    if (xYZStock == null)
                     {
-                        XYZStock xYZStock = new()
+                        stockDbData = await stocksDataHandler.GetStockPrice(nameof(XYZStock), DbConnectionList.Postgres);
+                        if (stockDbData != null || stockDbData != default)
                         {
-                            Date = RetrieveCurrentTime().ConventionalDateTime(),
-                            Price = stockDbData.Price.ConventionalPrice()
-                        };
-                        return xYZStock;
+                            xYZStock = new()
+                            {
+                                Date = RetrieveCurrentTime().ConventionalDateTime(),
+                                Price = stockDbData.Price.ConventionalPrice()
+                            };
+                        }
+
+                        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Postgres)}_{nameof(stocksDataHandler.GetStockPrice)}_{nameof(XYZStock)}");
+                        await cache.SetRecordAsync<XYZStock>(
+                            recordKey_XYZStock,
+                            xYZStock,
+                            TimeSpan.FromSeconds(redisSettings.AbsoluteExpirationRelativeToNow ?? default),
+                            TimeSpan.FromSeconds(redisSettings.SlidingExpiration ?? default));
                     }
                     else
                     {
-                        return new XYZStock();
+                        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Redis)}_{nameof(stocksDataHandler.GetStockPrice)}_{nameof(XYZStock)}");
                     }
+
+                    return xYZStock;
 
                 case "EvilCorpStock":
-                    stockDbData = await stocksDataHandler.GetStockPrice(nameof(EvilCorpStock), DbConnectionList.Postgres);
-                    if (stockDbData != null || stockDbData != default)
+                    EvilCorpStock evilCorpStock = new();
+                    string recordKey_EvilCorpStock = $"StocksApi_{nameof(EvilCorpStock)}_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
+                    evilCorpStock = await this.cache.GetRecordAsync<EvilCorpStock>(recordKey_EvilCorpStock);
+
+                    if (evilCorpStock == null)
                     {
-                        EvilCorpStock evilCorpStock = new()
+                        stockDbData = await stocksDataHandler.GetStockPrice(nameof(EvilCorpStock), DbConnectionList.Postgres);
+                        if (stockDbData != null || stockDbData != default)
                         {
-                            Date = RetrieveCurrentTime().ConventionalDateTime(),
-                            Price = stockDbData.Price.ConventionalPrice()
-                        };
-                        return evilCorpStock;
+                            evilCorpStock = new()
+                            {
+                                Date = RetrieveCurrentTime().ConventionalDateTime(),
+                                Price = stockDbData.Price.ConventionalPrice()
+                            };
+                        }
+
+                        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Postgres)}_{nameof(stocksDataHandler.GetStockPrice)}_{nameof(EvilCorpStock)}");
+                        await cache.SetRecordAsync<EvilCorpStock>(
+                            recordKey_EvilCorpStock,
+                            evilCorpStock,
+                            TimeSpan.FromSeconds(redisSettings.AbsoluteExpirationRelativeToNow ?? default),
+                            TimeSpan.FromSeconds(redisSettings.SlidingExpiration ?? default));
                     }
                     else
                     {
-                        return new EvilCorpStock();
+                        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Redis)}_{nameof(stocksDataHandler.GetStockPrice)}_{nameof(EvilCorpStock)}");
                     }
 
+                    return evilCorpStock;
+
                 case "HellStock":
-                    stockDbData = await stocksDataHandler.GetStockPrice(nameof(HellStock), DbConnectionList.Postgres);
-                    if (stockDbData != null || stockDbData != default)
+                    HellStock hellStock = new();
+                    string recordKey_HellStock = $"StocksApi_{nameof(HellStock)}_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
+                    hellStock = await this.cache.GetRecordAsync<HellStock>(recordKey_HellStock);
+
+                    if (hellStock == null)
                     {
-                        HellStock hellStock = new()
+                        stockDbData = await stocksDataHandler.GetStockPrice(nameof(HellStock), DbConnectionList.Postgres);
+                        if (stockDbData != null || stockDbData != default)
                         {
-                            Date = RetrieveCurrentTime().ConventionalDateTime(),
-                            Price = stockDbData.Price.ConventionalPrice()
-                        };
-                        return hellStock;
+                            hellStock = new()
+                            {
+                                Date = RetrieveCurrentTime().ConventionalDateTime(),
+                                Price = stockDbData.Price.ConventionalPrice()
+                            };
+                        }
+
+                        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Postgres)}_{nameof(stocksDataHandler.GetStockPrice)}_{nameof(HellStock)}");
+                        await cache.SetRecordAsync<HellStock>(
+                            recordKey_HellStock,
+                            hellStock,
+                            TimeSpan.FromSeconds(redisSettings.AbsoluteExpirationRelativeToNow ?? default),
+                            TimeSpan.FromSeconds(redisSettings.SlidingExpiration ?? default));
                     }
                     else
                     {
-                        return new HellStock();
+                        this.monitoringMetrics.IncrementUserMadeRequest($"{nameof(DbConnectionList.Redis)}_{nameof(stocksDataHandler.GetStockPrice)}_{nameof(HellStock)}");
                     }
+
+                    return hellStock;
 
                 default:
                     throw new ArgumentException("No stock exists for the name provided of {stockName}", stockName);
