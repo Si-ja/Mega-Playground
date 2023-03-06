@@ -6,7 +6,7 @@ The idea is that you could expand and add to the system new components and see h
 Everything operates on microservices level, meaning it should be possible to swap and change components at will.
 All of the components used in this case are meant only for educational purposes to allow for improving of own skills working with programming and modern technologies. This applies to usage of docker container versions, conceptual examples and the setup.
 
-Feel free to add more services, change existing ones or expand the system further with concepts like deploying everything with K8S or making builds with something like Jenkins where first the unit tests are ran for checking the state of the system.
+Feel free to add more services, change existing ones or expand the system further with concepts like deploying everything with K8S or making builds with something like Jenkins where first the unit tests are ran for checking the state of the system. There is quite a bit of room also for more efficient code to be present (i.e. refactoring).
 
 What is the essence of the existing services? It's just an idea of a stock market. There is a Market Service that lives it's own life and generates stock prices from time to time. They are saved in a Database. A Stocks API can retrieve that information from the databases (without communicating with the market directly). A front-end application is made for the user to be able to interact with the Stocks API without the need to access paths or know any of the url-s to be aware on the situation in the market.
 
@@ -37,10 +37,10 @@ All operations for keeping, recreating, deleting & stopping the infrastructure a
 ## TODOs
 - [X] Make a readme description on how to run the project.
 - [X] Add a basic graph showing how components work together.
-- [ ] Expand the graph of services when all relevant TODOs are finished.
+- [X] Expand the graph of services when all relevant TODOs are finished.
 - [X] Add Vue pages service, that will communicate with the StocksAPI.
 - [X] Add Vue front-end to a docker container.
-- [ ] Add Redis on top to cache search results as stock prices only update once x minutes.
+- [X] Add Redis on top to cache search results as stock prices only update once x minutes.
 - [X] Prepare everything (relevant parts) with the git setup.
 
 ## URLs
@@ -62,6 +62,8 @@ You can control the way the Market works with change of the stock prices and mon
 
 `http://localhost:8002/hangfire`
 
+**NOTE** Consider that Monitoring Metrics could be added here as well, if an implementation concept is found. Then this could utilize presence of the Prometheus service much more efficiently.
+
 ![Alt text](Visualization/Hangfire.PNG)
 
 ### Stocks API
@@ -72,7 +74,7 @@ Here you can view the stock prices that are retrieved via an API.
 Relevant endpoints:
 List of all stocks (ids are generated a new each time, this is needed for the Front-End application)
 
-`StocksList`
+`/StocksList`
 
 ![Alt text](Visualization/StocksApiList.PNG)
 
