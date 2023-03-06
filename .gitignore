@@ -357,7 +357,7 @@ MigrationBackup/
 
 builds/Database/Postgres/PgAdmin/
 builds/Database/Postgres/Stocks/
-builds/Database/Redis
+builds/Database/Redis/local-data
 
 builds/Grafana/Stocks/
 

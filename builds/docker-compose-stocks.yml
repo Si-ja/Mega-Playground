@@ -121,17 +121,19 @@ services:
 
   cachedb:
     container_name: RedisDB
-    image: redis:7.0.9-bullseye
+    image: redis:7.0.9
     restart: always
     environment:
       REDIS_PASSWORD: admin
     ports:
-      - "5433:6379"
+      - "6379:6379"
     volumes:
-      - ./Database/Redis/local-data:/data 
+      - ./Database/Redis/local-data:/data
+      - ./Database/Redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     networks:
       - stocks
 
 networks:
     stocks:
-        driver: bridge
+      driver: bridge

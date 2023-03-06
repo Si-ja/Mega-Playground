@@ -58,9 +58,17 @@ public class StocksDataRetriever : IStocksDataRetriever
             switch (stockName)
             {
                 case "XYZStock":
-                    XYZStock xYZStock = new();
+                    XYZStock xYZStock = null;
                     string recordKey_XYZStock = $"StocksApi_{nameof(XYZStock)}_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
-                    xYZStock = await this.cache.GetRecordAsync<XYZStock>(recordKey_XYZStock);
+
+                    try
+                    {
+                        xYZStock = await this.cache.GetRecordAsync<XYZStock>(recordKey_XYZStock);
+                    }
+                    catch (Exception e)
+                    {
+                        this.logger.LogError("An error has been encountered attempting to load data from Redis. Error: {e}", e.Message);
+                    }
                     
                     if (xYZStock == null)
                     {
@@ -89,9 +97,17 @@ public class StocksDataRetriever : IStocksDataRetriever
                     return xYZStock;
 
                 case "EvilCorpStock":
-                    EvilCorpStock evilCorpStock = new();
+                    EvilCorpStock evilCorpStock = null;
                     string recordKey_EvilCorpStock = $"StocksApi_{nameof(EvilCorpStock)}_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
-                    evilCorpStock = await this.cache.GetRecordAsync<EvilCorpStock>(recordKey_EvilCorpStock);
+
+                    try
+                    {
+                        evilCorpStock = await this.cache.GetRecordAsync<EvilCorpStock>(recordKey_EvilCorpStock);
+                    }
+                    catch (Exception e)
+                    {
+                        this.logger.LogError("An error has been encountered attempting to load data from Redis. Error: {e}", e.Message);
+                    }
 
                     if (evilCorpStock == null)
                     {
@@ -120,10 +136,18 @@ public class StocksDataRetriever : IStocksDataRetriever
                     return evilCorpStock;
 
                 case "HellStock":
-                    HellStock hellStock = new();
+                    HellStock hellStock = null;
                     string recordKey_HellStock = $"StocksApi_{nameof(HellStock)}_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
-                    hellStock = await this.cache.GetRecordAsync<HellStock>(recordKey_HellStock);
 
+                    try
+                    {
+                        hellStock = await this.cache.GetRecordAsync<HellStock>(recordKey_HellStock);
+                    } 
+                    catch (Exception e)
+                    {
+                        this.logger.LogError("An error has been encountered attempting to load data from Redis. Error: {e}", e.Message);
+                    }
+                    
                     if (hellStock == null)
                     {
                         stockDbData = await stocksDataHandler.GetStockPrice(nameof(HellStock), DbConnectionList.Postgres);
@@ -156,7 +180,7 @@ public class StocksDataRetriever : IStocksDataRetriever
         }
         catch (Exception e)
         {
-            throw new NullReferenceException($"An issue ocurred providing stock data. Error: {e}");
+            throw new NullReferenceException($"An issue ocurred providing stock data. Error: {e.Message}");
         }
     }
 

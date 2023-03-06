@@ -39,9 +39,17 @@ namespace StocksAPI.Services.StocksRetrieval
             {
                 // Check the cache first
                 List<StockReferencesModel> stocksReference = new();
-
                 string recordKey = "StocksApiList_" + DateTime.Now.ToString(redisSettings.RecordKeyForDate);
-                stocksReference = await cache.GetRecordAsync<List<StockReferencesModel>>(recordKey);
+
+                try
+                {
+                    stocksReference = await cache.GetRecordAsync<List<StockReferencesModel>>(recordKey);
+                }
+                catch (Exception e)
+                {
+                    this.logger.LogError("An error has been encountered attempting to load data from Redis. Error: {e}", e);
+                }
+
                 if (stocksReference == null)
                 {
                     // If nothing is found in the cache proceed with calling of the DB
